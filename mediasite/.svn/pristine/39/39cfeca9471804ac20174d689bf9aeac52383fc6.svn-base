@@ -1,0 +1,66 @@
+<!-- branch parameters given are the same as in the configuration file wskey.conf -->
+<!-- the test parameter must come first                                           -->
+<!-- other parameters like itemsPerPage are not handled                           -->
+<div class="container myheight">
+<div class="col-md-1">
+<div class="row">
+    <div class="col-md-1 logo">
+        <a href="/worldcat/"><div id="logo"></div></a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-1 logo">
+        <div id="rdlogo"></div>
+    </div>
+</div>
+</div>
+    <div class="col-md-10">
+        <div class="row">
+            <div class="col-md-10 vcenter">
+                <div id="title">
+                    <h2>Loopbonnen maken voor de TU Delft</h2> 
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-1 col-md-offset-1 vcenter">
+                <input id="startLoadingButton" type="button" value="Bonnen ophalen" title="Bonnen ophalen uit het systeem">
+            </div>
+            <div class="col-md-1 col-md-offset-1 vcenter">
+                <input id="printPageButton" type="button" value="Print de bonnen" title="Print de bonnen die op je scherm staan">
+            </div>
+            <div class="col-md-2 col-md-offset-1 vcenter">
+                <span id="message"></span>
+            </div>
+            <div class="col-md-3 vcenter">
+                <div class="dropdown">
+   <!--
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+-->
+                    <button class="btn btn-default dropdown-toggle" type="button" id="institutebutton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" title="Kies de lokatie">
+                        <span id="institute">Institute</span> 
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
+<!--
+      <li><a tabindex="-1" href="javascript:setURLParameter('oclc');">OCLC Testomgeving</a></li>
+      <li><a tabindex="-1" href="javascript:setURLParameter('test, central_library');">TU Delft test Central library</a></li>
+      <li><a tabindex="-1" href="javascript:setURLParameter('test, architecture');">TU Delft test Architecture</a></li>
+      <li><a tabindex="-1" href="javascript:setURLParameter('test, civil_engineering');">TU Delft test Civil engineering</a></li>
+      <li class="divider"></li>
+-->
+                        <li><a tabindex="-1" href="javascript:setURLParameter('central_library');">TU Delft Central library</a></li>
+                        <li><a tabindex="-1" href="javascript:setURLParameter('architecture');">TU Delft Architecture</a></li>
+                        <li><a tabindex="-1" href="javascript:setURLParameter('civil_engineering');">TU Delft Civil engineering</a></li>
+                        <li class="divider"></li>
+                        <li><a tabindex="-1" href="javascript:setURLParameter('pending, central_library');">Pending TU Delft Central library</a></li>
+                        <li><a tabindex="-1" href="javascript:setURLParameter('pending, architecture');">Pending TU Delft Architecture</a></li>
+                        <li><a tabindex="-1" href="javascript:setURLParameter('pending, civil_engineering');">Pending TU Delft Civil engineering</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

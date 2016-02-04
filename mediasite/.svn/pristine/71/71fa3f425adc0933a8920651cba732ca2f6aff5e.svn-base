@@ -1,0 +1,28 @@
+# Root directory
+ROOT_DIR = '/var/www/wsgi'
+
+# Pending directory for pending files
+PENDING_DIR = '/var/www/wsgi'
+
+# Configuration file for getting access to webservices and use modules and methods
+# Used in config.py
+CONFIGFILE = '/etc/worldcat/wskey.conf'
+
+# Server origins that have access to this server for using ajax calls
+CORS_ORIGIN_WHITELIST = (
+        'http://webappo.tudelft.nl',
+        'http://webapp.tudelft.nl',
+        ''
+    )
+
+# Templates that are requested from the origin-white-listed servers with their corresponding MIME type
+TEMPLATE_MAPPING = {
+    'menu': ('application/xml', 'worldcat/templates/menu.xml'),
+    'ticket': ('application/xml', 'worldcat/templates/ticket.xml'),
+    'jquery': ('application/x-javascript', 'worldcat/templates/js/jquery-2.1.4.min.js'),
+    'bootstrap_css': ('text/css', 'worldcat/templates/bootstrap-3.3.4-dist/css/bootstrap.min.css'),
+    'bootstrap_js': ('application/x-javascript', 'worldcat/templates/bootstrap-3.3.4-dist/js/bootstrap.min.js'),
+    'default_css': ('text/css', 'worldcat/templates/css/default.css'),
+    'logo_png': ('image/png', 'worldcat/templates/images/TU_Delft_logo_RGB.png'),
+    'rdlogo': ('image/png', 'worldcat/templates/images/graffiti.jpg'),
+}

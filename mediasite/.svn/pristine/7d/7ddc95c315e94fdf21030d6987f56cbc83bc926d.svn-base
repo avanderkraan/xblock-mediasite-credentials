@@ -1,0 +1,19 @@
+import os
+import sys
+import web
+
+path = '/var/www/wsgi/worldcat/'
+if path not in sys.path:
+    sys.path.append(path)
+
+from handler import Handler
+from default import Default
+from templatehandler import TemplateHandler
+
+urls = (
+     '/templates/(.*)', 'TemplateHandler',
+     '/(.*)/(.*)/.*', 'Handler',
+     '.*', 'Default',
+)
+application = web.application(urls, globals()).wsgifunc()
+

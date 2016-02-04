@@ -1,0 +1,146 @@
+# Dispatching of service modules works only if the modules are known in globals(), therefore the need to be imported
+# start dispatch imports
+from circulation import *
+from discovery import *
+from collection import *
+from availability import *
+# end dispatch imports
+import urllib2
+from urllib2 import URLError, HTTPError
+import web
+import json
+from settings import *
+
+class Handler:
+    '''
+    Handles incoming httprequests and takes care of dispatchting to the classes and methods as given in the url
+    e.g. http://<thisserver>/worldcat/pulllist/read/<parameters> calls the method 'read' from the class Pulllist with <parameters>  
+    '''
+    def __init__(self):
+        pass
+
+    def GET(self, service, method):
+        '''
+        Processes a HTTP GET request
+        '''
+        refuse = True
+        referer = web.ctx.env.get('HTTP_ORIGIN', '')
+        #print 'service en method', service, method, referer
+        #print web.ctx.env
+        if referer in CORS_ORIGIN_WHITELIST:
+            refuse = False
+            web.header("Access-Control-Allow-Origin", referer)
+        else:
+            web.header("Access-Control-Allow-Origin", "*")
+
+        web.header("Content-Type", "application/json; charset=utf-8")
+        #web.header("Content-Type", "text/plain; charset=utf-8")
+        web.header("Cache-Control", "no-cache")
+        web.header("Pragma", "no-cache")
+        web.header("Expires", "0")
+        response = None
+        try:
+            if refuse == True:
+                response = {'error': 'Origin %s is not allowed to access %s' % (referer, web.ctx.env.get('SERVER_NAME', ''))}
+            	return json.dumps(response)
+
+
+
+            input = web.input()
+
+            institution = ''
+            branch = ''
+            oclcNumber = ''
+            testParam = None
+            pendingParam = ''
+            useTestData = True
+            controlledParamKeys = ('amp', 'test', 'method', 'pending', 'institution', 'branch', 'oclcnumber')
+            apiParam = ''
+
+            if input.has_key('test'):
+                testParam =input.get('test').lower()
+
+            if input.has_key('pending'):
+                pendingParam =input.get('pending').lower()
+
+            if testParam == 'oclc':  # means general oclc test environment
+                institution = 'sandbox'  # default
+                if input.has_key('institution'):
+                    institution = input.get('institution').lower()
+                branch = 'east_branch'  # default
+                if input.has_key('branch'):
+                    branch = input.get('branch').lower()
+    
+            elif testParam:
+                useTestData = False
+                institution = 'sbtud'  # default
+                if input.has_key('institution'):
+                    institution = input.get('institution').lower()
+                branch = 'central_library'  # default
+                if input.has_key('branch'):
+                    branch = input.get('branch').lower()
+            else:
+                useTestData = False
+                institution = 'nltud'  # default
+                if input.has_key('institution'):
+                    institution = input.get('institution').lower()
+                branch = 'central_library'  # default
+                if input.has_key('branch'):
+                    branch = input.get('branch').lower()
+                     
+            if input.has_key('oclcnumber'):
+                oclcNumber = input.get('oclcnumber')
+
+            try:
+                for key in input:
+                    if key not in controlledParamKeys:
+                        apiParam = '%s%s=%s&' % (apiParam, key, input.get(key))
+                if len(apiParam) > 0:
+                    apiParam = apiParam[:-1]
+                    
+            except Exception, inst:
+                apiParam = ''
+
+
+            try:
+                obj = '%s' % (service.capitalize())
+                # dispatch to a class only works if the classname exists in globals
+                # therefore the classes are imported (see beginning of this file)
+                if globals().has_key(obj):
+                    objClass = globals()[obj]
+                    # objClass must contain a request_url (this comes from the configurationfile. See config.py)
+                    # objClass must have a method open(self, ...). E.g. open(self, method = None, institution = None, branch = None):
+                    
+                    instantiatedClass = objClass(useTestData = useTestData)
+                    # Because this is a dispatch function a surplus of parameters are given
+                    # The requested class-method open() will only use was is needed through kwargs 
+                    response = instantiatedClass.open(method = method, 
+                                                      institution = institution,
+                                                      branch = branch,
+                                                      oclcNumber = oclcNumber,
+                                                      pending = pendingParam,
+                                                      apiParam = apiParam)
+                    response = {'response': response}
+                else:
+                    message = 'The URL should look like http://<server>:<port>/<service>/<method>?<parameters>'
+                    message = '%s\n%s' % (message, 'Service %s is not available, use a valid service, see (see configuration file wskey.conf)' % service)
+                    response = {'error': message}
+
+            except HTTPError, inst:
+                message = 'This is usually caused by a Authorization failure at the worldcat server, you should check your URL and the service configuration in wskey.conf'
+                response = {'error': '%s %s\n%s' % ('External server responded with the following error:', inst.msg, message)}
+            
+            except Exception, inst:
+                response = {'error': inst}
+
+        except Exception, inst:
+            pass
+            print inst
+        return json.dumps(response)
+
+    def POST(self):
+        '''
+        Processes a HTTP POST request
+        '''
+        pass
+

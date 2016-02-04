@@ -1,0 +1,77 @@
+from settings import CONFIGFILE
+import ConfigParser
+
+class Config:
+    '''
+    return information about a service, institution and institution branch
+    service could be: 'circulation', 'search', each service has its own wskey with secret and so on
+    institution, divided into a datacenter (e.g. 'sd00') and a variety of workenvironments (authenticating_institution_id)
+       the workenvironment is choosen through a clientparameter (could be: 'sandbox', 'sbtud' or 'nltud')
+    '''
+    def __init__(self, filename = None, service = 'default', useTestData = None):
+        #print 'config useTestData', useTestData, service
+        filename = filename or CONFIGFILE or r'/etc/worldcat/wskey.conf'
+        try:
+            config = ConfigParser.ConfigParser()
+            config.readfp(open(filename))
+            self.accessData = {}
+            self.institutionData = {}
+            if useTestData == False:
+                self.accessData['key'] = config.get(service, 'key')
+                self.accessData['secret'] = config.get(service, 'secret')
+                try:
+                    #if self.accessData.has_key('principal_id'):
+                    self.accessData['principal_id'] = config.get(service, 'principal_id')
+                    self.accessData['principal_idns'] = config.get(service, 'principal_idns')
+                except:
+                    pass
+                self.institutionData['institution'] = config.items('institution')
+                self.institutionData['branch'] = config.items('institution.branch')
+
+            else:
+                self.accessData['key'] = config.get('%s_%s' % ('test', service), 'key')
+                self.accessData['secret'] = config.get('%s_%s' % ('test', service), 'secret')
+                try:
+                    #if self.accessData.has_key('principal_id'):
+                    self.accessData['principal_id'] = config.get('%s_%s' % ('test', service), 'principal_id')
+                    self.accessData['principal_idns'] = config.get('%s_%s' % ('test', service), 'principal_idns')
+                except:
+                    pass
+                self.institutionData['institution'] = config.items('test_institution')
+                self.institutionData['branch'] = config.items('test_institution.branch')
+
+            self.serviceData = {}
+            services = []
+            for section in config.sections():
+                if section not in ('default', 'institution', 'institution.branch') and not section.startswith('test_'):
+                    self.serviceData[section] = config.items(section)
+            
+        except Exception, inst:
+            print inst
+            
+    def getServiceData(self):
+        '''
+        return a dictionary with key/value for each dict-key
+        key and values are used to authenticate and get access to the webservices via API
+        '''
+        #print self.accessData.get('key')
+        return self.accessData
+
+    def getInstitutionData(self):
+        '''
+        return a dictionary with key/value lists for each dict-key
+        institute = [(key, value),...]
+        branch = [(key, value),...]
+        '''
+        return self.institutionData
+    
+    def getServiceAPIData(self):
+        '''
+        Depending on the service and on the api
+        return a dictionary with key/value lists for each dict-key
+        <service> = [(key, value),...]
+        <service.api> = [(key, value),...]
+        '''
+        return self.serviceData
+       
+
