@@ -1,2 +1,2 @@
 # xblock-mediasite-credentials
-Deliver mediasite API credentials to the XBlock so the XBlock can use the mediasite API
+The [edX XBlock for a mediasite server](../xblock-mediasite) needs credentials to access the mediasite API. Install this software on a separate server and allow access through a whitelist in /etc/mediasite.conf.
