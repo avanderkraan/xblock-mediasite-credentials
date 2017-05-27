@@ -9,7 +9,7 @@ apikey: api_key_for_this_server<br/>
 token_life_time: when using a token, this is the lifetime in minutes<br/>
 origin_whitelist: ip numbers and/or ip ranges for getting credentials, separated by comma<br/>
 
-#####Optional: more servers
+##### Optional: more servers
 [mediasite_url_2]<br/>
 username: API_username_for_this_server<br/>
 password: password_for_this_server<br/>
